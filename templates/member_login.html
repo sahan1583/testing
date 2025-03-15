@@ -1,0 +1,83 @@
+{% extends 'index.html' %}
+{% block content %}
+
+{% load widget_tweaks %}
+<style>
+  h1 {
+      border-bottom: 1px solid #fff;
+
+
+}
+</style>
+  <div class="content">
+  <form method="post">
+    {% csrf_token %}
+   
+       <style>
+      .form-control {
+  background-color: #333;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 400;
+
+  padding: 15px 25px;
+  width: 350px;
+  margin-top: 20px;
+  margin: 10px auto;
+}
+
+
+.form-control:focus {
+  box-shadow: none;
+  outline: none;
+  border: 2px solid #e50914;
+}
+
+.form-control::placeholder {
+  color: #fff;
+  opacity: 0.7;
+}
+
+.btnSubmit {
+  background-color: #e50914;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 10px 30px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btnSubmit:hover {
+  background-color: #b2070c;
+}
+       </style>
+          <h1>Member Login</h1>
+          <br>
+       
+
+
+            
+                {% render_field form.username class="form-control" placeholder="Username" %}
+                <br>
+                {% render_field form.password class="form-control" placeholder="Password" %}
+             
+
+           
+           
+
+        <button class="cool-button btnSubmit" style="margin-left: 5px;margin-bottom: 15px;" type="submit">Login</button>
+         
+        <div class="text-center">Do not have account? <a href="/membersignup">Signup here</a></div>
+        
+
+
+  </form>
+
+  {% endblock content %}
