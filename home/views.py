@@ -29,6 +29,8 @@ def memberSignup(request):
             username = form.cleaned_data['username']
             messages.success(request, f'Account created successfully for {username}!')
             return HttpResponseRedirect('/memberlogin')
+        else:
+            messages.error(request, 'Please correct the error below.')
     else:
         form = forms.MemberUserForm()
     return render(request, 'member_signup.html', {"form": form})
