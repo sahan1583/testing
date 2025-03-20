@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Case
 # from django.contrib.auth.forms import UserCreationForm
 
 #for admin signup
@@ -19,3 +20,8 @@ class MemberUserForm(forms.ModelForm):
         widgets = {
         'password': forms.PasswordInput()
         }
+
+class CaseForm(forms.ModelForm):
+    class Meta:
+        model=Case
+        fields=['title','description','location','image']

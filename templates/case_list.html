@@ -1,0 +1,115 @@
+{% extends base_template %}
+{% block content %}
+{% load static %}
+
+<style>
+    .cases-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        margin-top: 20px;
+        margin-left: 30px;
+    }
+
+    .case-card {
+        max-width: 300px;
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        margin-bottom: 20px;
+        transition: transform 0.2s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none; /* Remove underline */
+        color: inherit; /* Keep default text color */
+    }
+
+    .case-card:hover {
+        transform: scale(1.02);
+    }
+
+    .case-image {
+        max-width: 300px;
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+    }
+
+    .case-title {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        flex-grow: 1;
+    }
+
+    .case-footer {
+        background-color: #f8f9fa;
+        padding: 8px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        border-top: 1px solid #ddd;
+        color: #555;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-open {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-complete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .created-date {
+        font-style: italic;
+        color: #555;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="cases-container">
+    {% for case in cases %}
+        <a class="case-card" 
+        {% if approval != "True" %}
+        href="{% url 'case_details' case.id %}"
+        {% else %}
+        href="{% url 'approval_case_details' case.id %}"
+        {% endif %}
+        >
+            <img src="{{ case.image.url }}" alt="{{ case.title }}" class="case-image">
+            <div class="case-title">{{ case.title }}</div>
+            <div class="case-footer">
+                {% if approval != "True" %}
+                <p class="case-info">
+                    <strong>Status:</strong>
+                    {% if case.status == "open" %}
+                        <span class="status-badge status-open">Open</span>
+                    {% else %}
+                        <span class="status-badge status-complete">Complete</span>
+                    {% endif %}
+                </p>
+                {% endif %}
+                <p class="created-date">
+                    Created on: {{case.created}}
+                </p>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+
+{% endblock %}

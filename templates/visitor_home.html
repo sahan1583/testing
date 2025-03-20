@@ -1,0 +1,103 @@
+{% extends 'index.html' %}
+{% block content %}
+
+{% load widget_tweaks %}
+
+<style>
+  .form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .form-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #0072ff, #8811c5);
+    padding: 15px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .form-content {
+    padding: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .btnSubmit {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #0072ff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+  }
+
+  .btnSubmit:hover {
+    background: #0056b3;
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #0072ff;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="container">
+  <div class="form-container">
+    <div class="form-header">Register a New Case</div>
+    <div class="form-content">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="title">Case Title</label>
+          {% render_field form.title class="form-control" placeholder="Enter case title" %}
+        </div>
+
+        <div class="form-group">
+          <label for="description">Case Description</label>
+          {% render_field form.description class="form-control" placeholder="Describe the case" rows="3" %}
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location URL</label>
+          {% render_field form.location class="form-control" placeholder="Paste Google Maps URL" %}
+        </div>
+
+        <div class="form-group">
+          <label for="image">Upload Image</label>
+          {% render_field form.image class="form-control" %}
+        </div>
+
+        <button type="submit" class="btnSubmit">Submit</button>
+      </form>
+      
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

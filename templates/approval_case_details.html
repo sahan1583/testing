@@ -1,0 +1,159 @@
+{% extends base_template %}
+{% block content %}
+{% load static %}
+
+<style>
+    .case-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .case-image {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .case-title {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        color: #333;
+    }
+
+    .case-description {
+        background-color: #f8f8f8;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: justify;
+        line-height: 1.5;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .case-info {
+        font-size: 16px;
+        margin-top: 15px;
+    }
+
+    .case-info a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .case-info a:hover {
+        text-decoration: underline;
+    }
+
+    .status-container {
+        margin-top: 20px;
+    }
+
+    .status-label {
+        font-size: 16px;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .status-select {
+        padding: 8px 15px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .created-date {
+        font-style: italic;
+        color: #555;
+        margin-top: 20px;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin: 30px auto 0;
+        padding: 12px 20px;
+        background-color: #e50914;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        width: 200px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #b2070c;
+    }
+
+
+    .status-approve {
+        display: inline-block;
+        margin: 30px auto 0;
+        padding: 12px 20px;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        width: 200px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-approve:hover {
+        background-color: #218838;
+    }
+</style>
+
+<div class="case-container">
+    <img src="{{ case.image.url }}" alt="{{ case.title }}" class="case-image">
+    <h1 class="case-title">{{ case.title }}</h1>
+    
+    <div class="case-description">
+        <strong>Description:</strong>
+        <p>{{ case.description }}</p>
+    </div>
+
+    <p class="case-info"><strong>Location:</strong> <a href="{{ case.location }}" target="_blank">{{ case.location }}</a></p>
+
+    <form method="post" class="status-container">
+        {% csrf_token %}
+        {% comment %} <label class="status-label">Status:</label>
+        <select name="status" class="status-select">
+            <option value="open" {% if case.status == "open" %}selected{% endif %}>Open</option>
+            <option value="completed" {% if case.status == "completed" %}selected{% endif %}>Completed</option>
+        </select> {% endcomment %}
+        <button type="submit" class="status-approve" style="margin-left: 10px;" name="action" value="approve">Approve</button>
+        <button type="submit" class="back-button" style="margin-left: 10px;" name="action" value="reject">Reject</button>
+    </form>
+    <p class="created-date"><strong>Created on:</strong> {{ case.created }}</p>
+    {% comment %} {% if admin == "True" %}
+    <form method="post">
+        {% csrf_token %}
+        <!-- First Button -->
+        
+         
+        <button type="submit" class="back-button" name="delete"><i class="bx bx-trash icon"></i> Delete Case</button>
+        
+    </form>
+    {% endif %} {% endcomment %}
+
+    {% comment %} if case.status == completed then show the Closed on time as well {% endcomment %}
+    {% if case.status == "completed" %}
+        <p class="created-date"><strong>Closed on:</strong> {{ case.updated }}</p>
+    {% endif %}
+
+    <a href="{% url 'adminapproval' %}" class="back-button">Back to Cases</a>
+</div>
+
+{% endblock %}
