@@ -1,0 +1,148 @@
+{% extends base_template %}
+{% block content %}
+{% load static %}
+{% load widget_tweaks %}
+<style>
+  .form-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  .form-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #0072ff, #8811c5);
+    padding: 15px;
+    margin-bottom: 0;
+    border-radius: 10px 10px 0 0;
+  }
+  .form-content {
+    padding: 25px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+  }
+  .form-control {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+  .form-control:focus {
+    outline: none;
+    border-color: #0072ff;
+    box-shadow: 0 0 0 2px rgba(0, 114, 255, 0.2);
+  }
+  textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .btnSubmit {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #0072ff;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+  }
+  .btnSubmit:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #0072ff;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .back-link:hover {
+    text-decoration: underline;
+  }
+  .error-feedback {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  /* Make the file upload input more attractive */
+  input[type="file"] {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+  }
+  /* Add some responsive adjustments */
+  @media (max-width: 768px) {
+    .form-container {
+      margin: 20px auto;
+      width: 90%;
+    }
+  }
+</style>
+
+<div class="container">
+  <div class="form-container">
+    <div class="form-header">Update on Case</div>
+    <div class="form-content">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="{{ form.title.id_for_label }}">Title</label>
+          {% render_field form.title class="form-control" placeholder="Enter title" %}
+          {% if form.title.errors %}
+            <div class="error-feedback">{{ form.title.errors }}</div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group">
+          <label for="{{ form.description.id_for_label }}">Description</label>
+          {% render_field form.description class="form-control" placeholder="Describe the update" rows="4" %}
+          {% if form.description.errors %}
+            <div class="error-feedback">{{ form.description.errors }}</div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group">
+          <label for="{{ form.location.id_for_label }}">Location URL</label>
+          {% render_field form.location class="form-control" placeholder="Paste Google Maps URL" %}
+          {% if form.location.errors %}
+            <div class="error-feedback">{{ form.location.errors }}</div>
+          {% endif %}
+        </div>
+        
+        <div class="form-group">
+          <label for="{{ form.image.id_for_label }}">Upload Image</label>
+          {% render_field form.image class="form-control" %}
+          {% if form.image.errors %}
+            <div class="error-feedback">{{ form.image.errors }}</div>
+          {% endif %}
+        </div>
+        
+        <button type="submit" class="btnSubmit">Submit</button>
+      </form>
+      
+      <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="back-link">Back to case</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

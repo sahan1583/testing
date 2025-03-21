@@ -84,10 +84,11 @@ def caseDetails(request, case_id):
         admin = "True"
 
     case = get_object_or_404(Case, id=case_id)
+    updates = case.updates.all()
     if request.method == "POST":
         if "delete" in request.POST:
             # delete the case
-            # case.delete() 
+            case.delete() 
             messages.success(request, f'Case successfully deleted!')
             return redirect('caselist')
 
@@ -99,7 +100,38 @@ def caseDetails(request, case_id):
 
         return redirect("case_details", case_id=case.id)  # Redirect to the same page
     
-    return render(request, 'case_details.html', {'case': case, 'admin': admin, 'base_template': base_template})
+    return render(request, 'case_details.html', {'case': case, 'admin': admin, 'base_template': base_template, 'updates': updates})
+
+@login_required(login_url='home')
+def caseUpdateDetails(request, case_id, update_id):
+    if is_admin(request.user):
+        base_template = 'admin_base.html'
+    else:
+        base_template = 'member_base.html'
+    case = get_object_or_404(Case, id=case_id)
+    update = get_object_or_404(case.updates, id=update_id)
+    return render(request, 'case_update_details.html', {'case': case, 'update': update, 'base_template': base_template})
+
+@login_required(login_url='home')
+def caseUpdate(request, case_id):
+    if is_admin(request.user):
+        base_template = 'admin_base.html'
+    else:
+        base_template = 'member_base.html'
+    case = get_object_or_404(Case, id=case_id)
+    if request.method == 'POST':
+        form = forms.CaseUpdateForm(request.POST, request.FILES)
+        if form.is_valid():
+            update = form.save(commit=False)
+            update.case = case
+            update.save()
+            messages.success(request, f'New update successfully added!')
+            return redirect('case_details', case_id=case.id)
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = forms.CaseUpdateForm()
+    return render(request, 'case_update.html', {'form': form, 'case': case, 'base_template': base_template})
 
 @login_required(login_url='home')
 def caseList(request):

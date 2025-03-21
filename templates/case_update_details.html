@@ -161,57 +161,24 @@
 </style>
 
 <div class="case-container">
-    <img src="{{ case.image.url }}" alt="{{ case.title }}" class="case-image">
-    <h1 class="case-title">{{ case.title }}</h1>
+    {% if update.image %}
+    <img src="{{ update.image.url }}" alt="{{ update.title }}" class="case-image">
+    {% endif %}
+    <h1 class="case-title">{{ update.title }}</h1>
     <div class="case-description">
         <strong>Description:</strong>
-        <p>{{ case.description }}</p>
+        <p>{{ update.description }}</p>
     </div>
-    <p class="case-info"><strong>Location:</strong> <a href="{{ case.location }}" target="_blank">{{ case.location }}</a></p>
-    
-    {% if admin == "True" %}
-        <form method="post" class="status-container">
-            {% csrf_token %}
-            <label class="status-label">Status:</label>
-            <select name="status" class="status-select">
-                <option value="open" {% if case.status == "open" %}selected{% endif %}>Open</option>
-                <option value="completed" {% if case.status == "completed" %}selected{% endif %}>Completed</option>
-            </select>
-            <button type="submit" class="back-button" style="margin-left: 10px;">Update</button>
-        </form>
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" class="back-button" name="delete"><i class="bx bx-trash icon"></i> Delete Case</button>
-        </form>
+    {% if update.location %}
+    <p class="case-info"><strong>Location:</strong> <a href="{{ update.location }}" target="_blank">{{ update.location }}</a></p>
     {% endif %}
     
-    <p class="created-date"><strong>Created on:</strong> {{ case.created }}</p>
+    <p class="created-date"><strong>Updated on:</strong> {{ update.timestamp }}</p>
 
-    <!-- Updates Section -->
-    <div class="updates-section">
-        <h2 class="updates-title">Case Updates</h2>
-        {% if updates %}
-            {% for update in updates %}
-                <div class="update-item">
-                    <div class="update-info">
-                        <div class="update-timestamp">{{ update.timestamp }}</div>
-                        <div class="update-title">{{ update.title }}</div>
-                    </div>
-                    <a href="{% url 'case_update_details' case.id update.id %}" class="view-update-button">View Details</a>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p class="no-updates">No updates available for this case.</p>
-        {% endif %}
-    </div>
+
     
-    {% if case.status == "completed" %}
-        <p class="created-date"><strong>Closed on:</strong> {{ case.updated }}</p>
-    {% else %}
-        <a href="{% url 'case_update' case.id %}" class="back-button">Update case</a>
-    {% endif %}
     
-    <a href="{% url 'caselist' %}" class="back-button">Back to Cases</a>
+    <a href="{% url 'case_details' case.id %}" class="back-button">Back to Case</a>
 </div>
 
 {% endblock %}

@@ -35,5 +35,7 @@ urlpatterns = [
     path("home", views.home, name="home"),
     path('caselist/', views.caseList, name='caselist'),
     path("cases/<int:case_id>/", views.caseDetails, name="case_details"),
+    path("case/<int:case_id>/update/", views.caseUpdate, name="case_update"),
+    path("case/<int:case_id>/<int:update_id>", views.caseUpdateDetails, name="case_update_details"),
     path('visitorclick/', views.visitorHome, name='visitor_home'),
 ]
