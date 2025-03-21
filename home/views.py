@@ -94,8 +94,10 @@ def caseDetails(request, case_id):
 
         elif "status" in request.POST:
             new_status = request.POST.get("status")  # Get the selected status from form
-            if new_status in ["open", "completed"]:  # Validate the status
+            if new_status in ["open", "close"]:  # Validate the status
                 case.status = new_status
+                if new_status == "close":
+                    case.closed_by = f'{request.user.first_name} {request.user.last_name}'
                 case.save()  # Save changes to the database
 
         return redirect("case_details", case_id=case.id)  # Redirect to the same page
@@ -124,26 +126,29 @@ def caseUpdate(request, case_id):
         if form.is_valid():
             update = form.save(commit=False)
             update.case = case
+            update.updated_by = f'{request.user.first_name} {request.user.last_name}'
             update.save()
             messages.success(request, f'New update successfully added!')
             return redirect('case_details', case_id=case.id)
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.warning(request, 'Please correct the error below.')
     else:
         form = forms.CaseUpdateForm()
     return render(request, 'case_update.html', {'form': form, 'case': case, 'base_template': base_template})
 
 @login_required(login_url='home')
 def caseList(request):
+    admin = "False"
     if is_admin(request.user):
         base_template = 'admin_base.html'
+        admin = "True"
     else:
         base_template = 'member_base.html'
     cases = Case.objects.filter(approved=True)
-    return render(request, 'case_list.html', {'cases': cases, 'base_template': base_template})
+    return render(request, 'case_list.html', {'cases': cases, 'base_template': base_template, 'admin': admin})
 
 @user_passes_test(not_logged_in, login_url='/afterlogin')
-def visitorHome(request):
+def registerCase(request):
     if request.method == 'POST':
         form = forms.CaseForm(request.POST, request.FILES)  # Handles form data and uploaded files
         if form.is_valid():
@@ -151,13 +156,13 @@ def visitorHome(request):
             case.status = "open"  # Default status for new cases
             case.save()
             messages.success(request, f'New case successfully registered!')
-            return redirect('visitor_home')
+            return redirect('registercase')
         else:
             messages.error(request, 'Please correct the error below.')
     else:
         form = forms.CaseForm()
 
-    return render(request, 'visitor_home.html', {'form': form})
+    return render(request, 'register_case.html', {'form': form})
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)

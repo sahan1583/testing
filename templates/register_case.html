@@ -1,4 +1,5 @@
 {% extends 'index.html' %}
+{% block title %} Register Case {% endblock title %}
 {% block content %}
 
 {% load widget_tweaks %}
@@ -6,7 +7,7 @@
 <style>
   .form-container {
     max-width: 600px;
-    margin: 50px auto;
+    margin: 100px auto;
     padding: 30px;
     background: #fff;
     border-radius: 10px;
@@ -73,6 +74,11 @@
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
+        <div class="form-group">
+          <label for="name">Name</label>
+          {% render_field form.created_by class="form-control" placeholder="Enter your name" %}
+        </div>
+
         <div class="form-group">
           <label for="title">Case Title</label>
           {% render_field form.title class="form-control" placeholder="Enter case title" %}

@@ -1,4 +1,5 @@
 {% extends base_template %}
+{% block title %} Case Details {% endblock title %}
 {% block content %}
 {% load static %}
 
@@ -175,7 +176,7 @@
             <label class="status-label">Status:</label>
             <select name="status" class="status-select">
                 <option value="open" {% if case.status == "open" %}selected{% endif %}>Open</option>
-                <option value="completed" {% if case.status == "completed" %}selected{% endif %}>Completed</option>
+                <option value="close" {% if case.status == "close" %}selected{% endif %}>Close</option>
             </select>
             <button type="submit" class="back-button" style="margin-left: 10px;">Update</button>
         </form>
@@ -185,7 +186,7 @@
         </form>
     {% endif %}
     
-    <p class="created-date"><strong>Created on:</strong> {{ case.created }}</p>
+    <p class="created-date"><strong>Created on:</strong> {{ case.created }}, <strong>by</strong> {{ case.created_by }}</p>
 
     <!-- Updates Section -->
     <div class="updates-section">
@@ -194,7 +195,7 @@
             {% for update in updates %}
                 <div class="update-item">
                     <div class="update-info">
-                        <div class="update-timestamp">{{ update.timestamp }}</div>
+                        <div class="update-timestamp">{{ update.timestamp }}, <strong>by</strong> {{ update.updated_by }}</div>
                         <div class="update-title">{{ update.title }}</div>
                     </div>
                     <a href="{% url 'case_update_details' case.id update.id %}" class="view-update-button">View Details</a>
@@ -205,8 +206,8 @@
         {% endif %}
     </div>
     
-    {% if case.status == "completed" %}
-        <p class="created-date"><strong>Closed on:</strong> {{ case.updated }}</p>
+    {% if case.status == "close" %}
+        <p class="created-date"><strong>Closed on:</strong> {{ case.updated }}, <strong>by</strong> {{ case.closed_by }}</p>
     {% else %}
         <a href="{% url 'case_update' case.id %}" class="back-button">Update case</a>
     {% endif %}

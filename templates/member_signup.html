@@ -1,20 +1,9 @@
 {% extends 'index.html' %}
+{% block title %} Member Signup {% endblock title %}
 {% block content %}
-{% comment %} <!DOCTYPE html> {% endcomment %}
 
 {% load widget_tweaks %}
-{% comment %} <html lang="en" dir="ltr">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Hospital Management System</title> {% endcomment %}
   <style type="text/css">
-    {% comment %} body {
-      color: #aa082e;
-      background-color: #b6bde7;
-      font-family: 'Roboto', sans-serif;
-    } {% endcomment %}
 
     a:link {
       text-decoration: none;
@@ -50,16 +39,12 @@
     }
   </style>
 
-{% comment %} </head> {% endcomment %}
-
-
-{% comment %} <body>
-  {% include "navbar.html" %} {% endcomment %}
   <br>
   <br>
   <br>
   <br>
-
+  <br>
+  
 
   <!--- signup page for admin by admin    ---------->
   <form method="post">
@@ -100,9 +85,5 @@
   </form>
 
 
-  {% comment %} {% include "footer.html" %}
-</body>
-
-</html> {% endcomment %}
 
 {% endblock content %}

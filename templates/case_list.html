@@ -1,4 +1,13 @@
 {% extends base_template %}
+{% block title %}
+{% if admin == "True" %}
+ Admin Home
+{% elif approval == "True" %}
+Approval Home
+{% else %}
+Member Home 
+{% endif %}
+{% endblock title %}
 {% block content %}
 {% load static %}
 
@@ -70,7 +79,7 @@
         color: white;
     }
 
-    .status-complete {
+    .status-close {
         background-color: #dc3545;
         color: white;
     }
@@ -100,7 +109,7 @@
                     {% if case.status == "open" %}
                         <span class="status-badge status-open">Open</span>
                     {% else %}
-                        <span class="status-badge status-complete">Complete</span>
+                        <span class="status-badge status-close">Closed</span>
                     {% endif %}
                 </p>
                 {% endif %}

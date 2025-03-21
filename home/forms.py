@@ -24,7 +24,7 @@ class MemberUserForm(forms.ModelForm):
 class CaseForm(forms.ModelForm):
     class Meta:
         model=Case
-        fields=['title','description','location','image']
+        fields=['created_by','title','description','location','image']
 
 class CaseUpdateForm(forms.ModelForm):
     class Meta:

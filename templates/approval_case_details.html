@@ -1,4 +1,5 @@
 {% extends base_template %}
+{% block title %} Case Details {% endblock title %}
 {% block content %}
 {% load static %}
 
@@ -128,15 +129,11 @@
 
     <form method="post" class="status-container">
         {% csrf_token %}
-        {% comment %} <label class="status-label">Status:</label>
-        <select name="status" class="status-select">
-            <option value="open" {% if case.status == "open" %}selected{% endif %}>Open</option>
-            <option value="completed" {% if case.status == "completed" %}selected{% endif %}>Completed</option>
-        </select> {% endcomment %}
+        
         <button type="submit" class="status-approve" style="margin-left: 10px;" name="action" value="approve">Approve</button>
         <button type="submit" class="back-button" style="margin-left: 10px;" name="action" value="reject">Reject</button>
     </form>
-    <p class="created-date"><strong>Created on:</strong> {{ case.created }}</p>
+    <p class="created-date"><strong>Created on:</strong> {{ case.created }}, <strong>by</strong> {{ case.created_by }}</p>
     {% comment %} {% if admin == "True" %}
     <form method="post">
         {% csrf_token %}
@@ -148,8 +145,7 @@
     </form>
     {% endif %} {% endcomment %}
 
-    {% comment %} if case.status == completed then show the Closed on time as well {% endcomment %}
-    {% if case.status == "completed" %}
+    {% if case.status == "close" %}
         <p class="created-date"><strong>Closed on:</strong> {{ case.updated }}</p>
     {% endif %}
 

@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
+{% extends 'index.html' %}
+{% block content %}
 
-<head>
+{% load static %}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     html {
@@ -161,10 +160,8 @@
       }
     }
   </style>
-</head>
 
-<body>
-  {% include "navbar.html" %}
+  {% comment %} {% include "navbar.html" %} {% endcomment %}
   <style>
     .cool-button {
       background-color: #904e95;
@@ -266,13 +263,12 @@
           <img src="{% static "images/register.png" %}" alt="John" style="width:100%">
           <p class="title">Register new case</p>
           <button class="cool-button" style="margin-left: 35px;margin-bottom: 15px;"
-            onclick="flyAway('/visitorclick')">Register</button>
+            onclick="flyAway('/registercase')">Register</button>
         </div>
 
       </div>
 
     </div>
   </div>
-</body>
 
-</html>
+{% endblock content %}

@@ -1,4 +1,5 @@
 {% extends base_template %}
+{% block title %} Update Details {% endblock title %}
 {% block content %}
 {% load static %}
 
@@ -173,7 +174,7 @@
     <p class="case-info"><strong>Location:</strong> <a href="{{ update.location }}" target="_blank">{{ update.location }}</a></p>
     {% endif %}
     
-    <p class="created-date"><strong>Updated on:</strong> {{ update.timestamp }}</p>
+    <p class="created-date"><strong>Updated on:</strong> {{ update.timestamp }}, <strong>by</strong> {{ update.updated_by }}</p>
 
 
     
