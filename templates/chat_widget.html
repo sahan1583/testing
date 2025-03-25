@@ -1,0 +1,94 @@
+<div id="chat-widget">
+    <div id="chat-header" onclick="toggleChat()">💬 Chat</div>
+    <div id="chat-body">
+        <div id="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="sendMessage(event)">
+    </div>
+</div>
+
+<style>
+    #chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 300px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+    }
+
+    #chat-header {
+        background: #904e95;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 10px 10px 0 0;
+    }
+
+    #chat-body {
+        display: none;
+        padding: 10px;
+    }
+
+    #chat-messages {
+        max-height: 200px;
+        overflow-y: auto;
+        padding-bottom: 10px;
+    }
+
+    #chat-input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+
+<script>
+    function toggleChat() {
+        let chatBody = document.getElementById("chat-body");
+        chatBody.style.display = chatBody.style.display === "none" ? "block" : "none";
+    }
+
+    function sendMessage(event) {
+        if (event.key === "Enter") {
+            let input = document.getElementById("chat-input");
+            let message = input.value.trim();
+            if (message) {
+                let chatMessages = document.getElementById("chat-messages");
+                chatMessages.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+                input.value = "";
+
+                // Send message via AJAX
+                fetch("/send_message/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ message: message })
+                }).then(response => response.json()).then(data => {
+                    chatMessages.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            }
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            let cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
