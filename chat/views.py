@@ -1,69 +1,63 @@
-from django.shortcuts import render
 from django.http import JsonResponse
-from .models import ChatMessage
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404
+from .models import ChatMessage
 import json
 
-# Fetch the last 5 messages (on chat open)
-def fetch_messages(request):
-    messages = ChatMessage.objects.order_by('-timestamp')[:5]
-    messages_data = [
-        {
-            "id": msg.id,
-            "image": msg.image.url if msg.image else None,
-            "location": msg.location,
-            "title": msg.title,
-            "description": msg.description,
-            "timestamp": msg.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-        }
-        for msg in messages
-    ]
-    return JsonResponse({"messages": messages_data})
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import ChatMessage
+from .serializers import ChatMessageSerializer
 
 
-# Fetch older messages for infinite scrolling
-def load_more_messages(request):
-    last_msg_id = request.GET.get('last_id')
-    messages = ChatMessage.objects.filter(id__lt=last_msg_id).order_by('-timestamp')[:5]
 
-    messages_data = [
-        {
-            "id": msg.id,
-            "image": msg.image.url if msg.image else None,
-            "location": msg.location,
-            "title": msg.title,
-            "description": msg.description,
-            "timestamp": msg.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-        }
-        for msg in messages
-    ]
-    return JsonResponse({"messages": messages_data})
+class ChatMessageListCreateView(APIView):
+    def get(self, request):
+        """Fetch paginated chat messages"""
+        page = int(request.GET.get("page", 1))
+        messages = ChatMessage.objects.all().order_by("-created_at")[(page-1)*5: page*5]
+        serializer = ChatMessageSerializer(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-# Save a new message
-@csrf_exempt
-def save_message(request):
-    if request.method == "POST":
-        data = request.POST
-        image = request.FILES.get("image")  # Handle image file
-
-        chat_message = ChatMessage.objects.create(
-            location=data.get("location", ""),
-            title=data["title"],
-            description=data["description"],
-            image=image
-        )
-        return JsonResponse({"success": True, "message": "Message saved!"})
+    def post(self, request):
+        """Send a new chat message"""
+        serializer = ChatMessageSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
+from .models import ChatMessage
 
 @csrf_exempt
-def send_message(request):
+def chat_messages(request):
     if request.method == "POST":
-        data = json.loads(request.body)
-        message = data.get("message", "")
+        try:
+            data = json.loads(request.body.decode("utf-8"))  # ✅ Parse JSON correctly
+            title = data.get("title", "").strip()
+            description = data.get("description", "").strip()
+            location = data.get("location", "").strip()
 
-        # Replace with actual response logic
-        bot_response = f"I received: {message}"
+            if not title or not description or not location:
+                return JsonResponse({"error": "All fields are required"}, status=400)
 
-        return JsonResponse({"response": bot_response})
+            new_message = ChatMessage.objects.create(title=title, description=description, location=location)
+
+            return JsonResponse({
+                "title": new_message.title,
+                "description": new_message.description,
+                "location": new_message.location,
+                "created_at": new_message.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            }, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
 
     return JsonResponse({"error": "Invalid request"}, status=400)

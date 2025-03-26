@@ -25,12 +25,13 @@ SECRET_KEY = 'django-insecure-p9m3hzz75#uq_vol=5zs!ff064470-muz0fqpx7@0_vb$+5!c0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'home.apps.HomeConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'channels',
     'chat',
 ]
 
@@ -71,6 +73,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'animalwellness.wsgi.application'
+ASGI_APPLICATION = 'animalwellness.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Change to Redis later for scalability
+    }
+}
 
 
 # Database
@@ -128,9 +137,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Added manually
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, 'static'),
 ]
+
 
 LOGIN_REDIRECT_URL = '/afterlogin'
 # LOGOUT_REDIRECT_URL = '/logout'
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',  # Only return JSON responses
+    ),
+}
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
