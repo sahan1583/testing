@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,render
 from .models import ChatMessage
 import json
 from django.core.files.base import ContentFile
@@ -81,3 +81,7 @@ def upload_image(request):
         return JsonResponse({"image_url": encoded_url})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+def chat_widget(request):
+    messages = ChatMessage.objects.order_by('-created_at')[:15][::-1] 
+    return render(request, 'chat_widget.html', {'messages': messages})

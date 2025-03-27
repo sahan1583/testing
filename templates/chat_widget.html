@@ -1,13 +1,12 @@
-{% load static %} <!-- Load static only once -->
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Chat</title>
-    
-    <!-- Correct way to load static CSS -->
+    <title>Animal Welfare Community Chat</title>
+
     <link rel="stylesheet" href="{% static 'chat/chat.css' %}">
 </head>
 <body>
@@ -15,19 +14,17 @@
 <div class="chat-container">
     <div class="chat-header">Community Chat</div>
     
-    <div id="chat-box" class="chat-box"></div> <!-- Messages will load here -->
+    <div id="chat-box" class="chat-box"></div> 
 
-    <!-- Message Input Section -->
     <div class="input-container">
-        <input type="text" id="title" class="input-field" placeholder="Title">
-        <textarea id="description" class="input-field" placeholder="Description"></textarea>
-        <input type="url" id="location" class="input-field" placeholder="Location URL">
+        <input type="text" id="title" class="input-field" placeholder="Title" required>
+        <textarea id="description" class="input-field" placeholder="Description" required></textarea>
+        <input type="url" id="location" class="input-field" placeholder="Location URL" required>
         <input type="file" id="image" class="input-field">
         <button id="send-btn" class="send-button">Send</button>
     </div>
 </div>
 
-<!-- Correct way to load static JavaScript -->
 <script src="{% static 'chat/chat.js' %}" defer></script>
 
 </body>

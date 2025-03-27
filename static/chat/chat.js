@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
     socket.onmessage = function (event) {
         let data = JSON.parse(event.data);
         if (data.type === "chat_message") {
-            appendMessage(data);  // ✅ Append new message dynamically
+            appendMessage(data);
         } else if (data.type === "chat_history") {
-            data.messages.forEach(msg => appendMessage(msg));  // ✅ Load old messages
+            data.messages.forEach(msg => appendMessage(msg));
         }
     };
 
@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("All fields are required!");
             return;
         }
+
         let imageUrl = null;
         let messageData = {
             title: title,
@@ -36,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
         };
 
         if (imageFile) {
-            // ✅ Upload image via an API before sending the message
             let formData = new FormData();
             formData.append("image", imageFile);
 
@@ -47,53 +47,31 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.image_url) {
-                    messageData.image = data.image_url;  // ✅ Add uploaded image URL
+                    messageData.image = data.image_url;
                 }
-                socket.send(JSON.stringify(messageData));  // ✅ Send message via WebSocket
+                socket.send(JSON.stringify(messageData));
             })
             .catch(error => console.error("Image upload error:", error));
-        }else {
-            socket.send(JSON.stringify(messageData));  // ✅ Send message if no image
+        } else {
+            socket.send(JSON.stringify(messageData));
         }
 
-
-        
-
-        // socket.send(JSON.stringify(messageData));  // ✅ Send message via WebSocket
-
-        // ✅ Clear input fields after sending
         titleInput.value = "";
         descriptionInput.value = "";
         locationInput.value = "";
         imageInput.value = "";
     });
 
-    // function appendMessage(data) {
-    //     let msgElement = document.createElement("div");
-    //     msgElement.classList.add("message");
-    //     msgElement.innerHTML = `
-    //         <strong>${data.title}</strong><br>
-    //         ${data.description}<br>
-    //         <a href="${data.location}" target="_blank">${data.location}</a><br>
-    //         ${data.image ? `<img src="${data.image}" class="chat-img" onerror="this.onerror=null;this.src='/static/default-placeholder.png';" />` : ""}
-    //         <small>${data.created_at}</small>
-    //     `;
-    //     chatBox.append(msgElement);
-    //     chatBox.scrollTop = chatBox.scrollHeight;  // ✅ Auto-scroll to bottom
-    // }
-
     function appendMessage(data) {
         let imgUrl = data.image;
-    
-        // ✅ Remove duplicate "/media/media/" if it exists
         if (imgUrl && imgUrl.includes("/media/media/")) {
             imgUrl = imgUrl.replace("/media/media/", "/media/");
         }
-        
+
         if (imgUrl) {
             imgUrl = decodeURIComponent(imgUrl);
         }
-        
+
         let msgElement = document.createElement("div");
         msgElement.classList.add("message");
         msgElement.innerHTML = `
@@ -104,9 +82,6 @@ document.addEventListener("DOMContentLoaded", function () {
             <small>${data.created_at}</small>
         `;
         chatBox.append(msgElement);
-        chatBox.scrollTop = chatBox.scrollHeight;  // ✅ Auto-scroll to bottom
+        chatBox.scrollTop = chatBox.scrollHeight;  
     }
-    
 });
-
-

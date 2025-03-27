@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 {% load static %}
 <html lang="en">
 <head>
@@ -196,6 +196,110 @@
   <script>
     $(document).ready(function() {
       // Add active class to current page
+      var path = window.location.pathname;
+      $('.navbar-nav a').each(function() {
+        if (this.href.endsWith(path)) {
+          $(this).addClass('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; padding-top: 40px; }
+    .navbar {
+      background: linear-gradient(90deg, rgba(144, 78, 149, 0.9) 0%, rgba(203, 45, 62, 0.9) 100%) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .navbar-nav { margin-left: auto; }
+    .nav-link {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.2); }
+    .logout-btn {
+      background: none; border: none; color: rgba(255, 255, 255, 0.9);
+      font-weight: 500; padding: 5px 10px; border-radius: 30px;
+      transition: all 0.3s ease; cursor: pointer;
+    }
+    .logout-btn:hover { background-color: rgba(255, 255, 255, 0.15); }
+  </style>
+</head>
+<body>
+  <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+      <a href="/" class="navbar-brand">Animal Welfare</a>
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a href="/dashboard" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a href="/cases" class="nav-link">Cases</a>
+            </li>
+            <li class="nav-item">
+              <a href="/publicchat" class="nav-link">
+                <i class="fa fa-comments mr-1"></i> Chat
+              </a>
+            </li>
+            <li class="nav-item">
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">
+                  <i class="fa fa-sign-out mr-1"></i> Logout
+                </button>
+              </form>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a href="/adminclick" class="nav-link">
+                <i class="fa fa-lock mr-1"></i> Admin
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/memberclick" class="nav-link">
+                <i class="fa fa-user mr-1"></i> Member
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/registercase" class="nav-link">
+                <i class="fa fa-paw mr-1"></i> Register
+              </a>
+            </li>
+            <li class="nav-item"></li>
+              <a href="/publicchat" class="nav-link">
+                <i class="fa fa-comments mr-1"></i> Chat
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    $(document).ready(function() {
       var path = window.location.pathname;
       $('.navbar-nav a').each(function() {
         if (this.href.endsWith(path)) {
