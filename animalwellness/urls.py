@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from chat.views import upload_image
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('api/', include('chat.urls')),
+    path("upload-image/", upload_image, name="upload_image"),
 ]
 
 if settings.DEBUG:

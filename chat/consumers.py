@@ -26,37 +26,67 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         """Handle messages sent by users"""
         data = json.loads(text_data)
-        title = data["title"]
-        description = data["description"]
-        location = data["location"]
-        image = data.get("image", None)  # Handle optional image
+        if data.get("type") == "load_more":  
+            offset = data.get("offset", 0)  
+            older_messages = await self.get_messages(offset=offset, limit=10)
+            await self.send(text_data=json.dumps({"type": "chat_history", "messages": older_messages}))
+        else:
+            title = data["title"]
+            description = data["description"]
+            location = data["location"]
+            image_url = data.get("image", None)  # Handle optional image
 
-        # ✅ Save message to the database
-        message = await self.save_message(title, description, location, image)
-
-        # ✅ Send the message to all users in the chat room
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
+            # ✅ Save message to the database
+            message = await self.save_message(title, description, location, image_url)
+            
+            # ✅ Send new message immediately to sender (fixes refresh issue)
+            await self.send(text_data=json.dumps({
                 "type": "chat_message",
-                "title": title,
-                "description": description,
-                "location": location,
-                "created_at": message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "image": message.image.url if message.image else None,
-            }
-        )
+                "title": message["title"],
+                "description": message["description"],
+                "location": message["location"],
+                "created_at": message["created_at"],
+                "image": message["image"],
+            }))
+            # ✅ Send the message to all users in the chat room
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "chat_message",
+                    "title": message["title"],
+                    "description": message["description"],
+                    "location": message["location"],
+                    "created_at": message["created_at"],
+                    "image": message["image"],
+                }
+            )
 
     async def chat_message(self, event):
         """Send messages to WebSocket clients"""
         await self.send(text_data=json.dumps(event))
 
     @sync_to_async
-    def save_message(self, title, description, location, image):
+    def save_message(self, title, description, location, image_url):
         """ Save the message to the database in a synchronous function """
-        return ChatMessage.objects.create(
-            title=title, description=description, location=location, image=image
-        )
+        message = ChatMessage.objects.create(
+        title=title,
+        description=description,
+        location=location,
+        image=image_url  # ✅ Save image URL in DB
+    )
+        image_url = None
+        if message.image:
+            image_url = message.image.url  # Django automatically prepends MEDIA_URL
+            if image_url.startswith("/media/media/"):
+                image_url = image_url.replace("/media/media/", "/media/")  # Fix incorrect URLs
+
+        return {
+            "title": message.title,
+            "description": message.description,
+            "location": message.location,
+            "created_at": message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "image": image_url,  # ✅ Return image URL
+        }
     
     @sync_to_async
     def get_last_messages(self):

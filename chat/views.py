@@ -5,14 +5,13 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from .models import ChatMessage
 import json
-
+from django.core.files.base import ContentFile
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import ChatMessage
 from .serializers import ChatMessageSerializer
-
-
+from django.conf import settings
+import urllib.parse
 
 class ChatMessageListCreateView(APIView):
     def get(self, request):
@@ -59,5 +58,26 @@ def chat_messages(request):
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+@csrf_exempt
+def upload_image(request):
+    if request.method == "POST" and request.FILES.get("image"):
+        image_file = request.FILES["image"]
+        # ✅ Save file properly
+        file_path = f"chat_images/{image_file.name}"
+        saved_path = default_storage.save(file_path, ContentFile(image_file.read()))
+
+        # ✅ Generate proper media URL
+        image_url = settings.MEDIA_URL + saved_path
+
+        # ✅ FIX: Ensure the URL is properly encoded **only once**
+        encoded_url = urllib.parse.quote(image_url, safe='/:')
+
+        print(f"✅ Image saved at: {saved_path}")
+        print(f"✅ Returning URL: {encoded_url}")
+
+        return JsonResponse({"image_url": encoded_url})
 
     return JsonResponse({"error": "Invalid request"}, status=400)
