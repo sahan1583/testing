@@ -10,14 +10,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_name = "chat_room"
         self.room_group_name = f"chat_{self.room_name}"
 
-        # ✅ Join the WebSocket group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        # ✅ Fetch last 10 messages and send them to the user
+        # Fetch last 10 messages and send them as a batch
         last_messages = await self.get_last_messages()
-        for msg in last_messages:
-            await self.send(text_data=json.dumps(msg))
+        await self.send(text_data=json.dumps({"type": "chat_history", "messages": last_messages}))
 
     async def disconnect(self, close_code):
         """Handle disconnection"""
@@ -26,38 +24,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         """Handle messages sent by users"""
         data = json.loads(text_data)
-        if data.get("type") == "load_more":  
-            offset = data.get("offset", 0)  
-            older_messages = await self.get_messages(offset=offset, limit=10)
-            await self.send(text_data=json.dumps({"type": "chat_history", "messages": older_messages}))
+
+        if data.get("type") == "load_history":  
+            last_messages = await self.get_last_messages()
+            await self.send(text_data=json.dumps({"type": "chat_history", "messages": last_messages}))
+
         else:
             title = data["title"]
             description = data["description"]
             location = data["location"]
-            image_url = data.get("image", None)  # Handle optional image
+            image_url = data.get("image", None)
 
-            # ✅ Save message to the database
             message = await self.save_message(title, description, location, image_url)
-            
-            # ✅ Send new message immediately to sender (fixes refresh issue)
-            await self.send(text_data=json.dumps({
-                "type": "chat_message",
-                "title": message["title"],
-                "description": message["description"],
-                "location": message["location"],
-                "created_at": message["created_at"],
-                "image": message["image"],
-            }))
-            # ✅ Send the message to all users in the chat room
+
+            #  Immediately send the message to the sender
+            # await self.send(text_data=json.dumps({
+            #     "type": "chat_message",
+            #     **message  # Expand message dict
+            # }))
+
+            #  Broadcast to all users
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     "type": "chat_message",
-                    "title": message["title"],
-                    "description": message["description"],
-                    "location": message["location"],
-                    "created_at": message["created_at"],
-                    "image": message["image"],
+                    **message
                 }
             )
 
@@ -67,32 +58,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, title, description, location, image_url):
-        """ Save the message to the database in a synchronous function """
+        """ Save the message to the database """
         message = ChatMessage.objects.create(
-        title=title,
-        description=description,
-        location=location,
-        image=image_url  # ✅ Save image URL in DB
-    )
+            title=title,
+            description=description,
+            location=location,
+            image=image_url
+        )
         image_url = None
         if message.image:
-            image_url = message.image.url  # Django automatically prepends MEDIA_URL
+            image_url = message.image.url
             if image_url.startswith("/media/media/"):
-                image_url = image_url.replace("/media/media/", "/media/")  # Fix incorrect URLs
+                image_url = image_url.replace("/media/media/", "/media/")  
 
         return {
             "title": message.title,
             "description": message.description,
             "location": message.location,
             "created_at": message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "image": image_url,  # ✅ Return image URL
+            "image": image_url,
         }
-    
+
     @sync_to_async
     def get_last_messages(self):
         """ Fetch the last 10 messages from the database """
-        messages = ChatMessage.objects.order_by("-created_at")[:10]  # Fetch latest 10
-        messages = reversed(messages)  # Reverse order to send oldest first
+        messages = ChatMessage.objects.order_by("-created_at")[:10]  
+        messages = reversed(messages)  
         return [
             {
                 "title": msg.title,

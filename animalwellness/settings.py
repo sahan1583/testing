@@ -75,11 +75,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'animalwellness.wsgi.application'
 ASGI_APPLICATION = 'animalwellness.asgi.application'
 
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Change to Redis later for scalability
+#     }
+# }
+
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Change to Redis later for scalability
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
 }
+
 
 
 # Database
@@ -153,3 +163,7 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Ensure Redis is running
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
