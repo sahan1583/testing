@@ -24,6 +24,34 @@ body {
     border-radius: 6px;
 }
 
+/* Styling for the Load More Button */
+.load-more-button {
+    display: block; /* Button takes full width */
+    width: calc(100% - 30px); /* Adjust width accounting for padding */
+    padding: 10px 15px;
+    margin: 0 auto 15px auto; /* Center button horizontally, add bottom margin */
+    background-color: #e9d5ff; /* Light purple */
+    color: #6b21a8; /* Darker purple text */
+    border: 1px solid #c084fc; /* Purple border */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-align: center;
+    transition: background-color 0.2s ease, opacity 0.3s ease, visibility 0.3s ease; /* Smooth transitions */
+    /* Initially hidden */
+    opacity: 0;
+    visibility: hidden;
+}
+
+.load-more-button:hover:not(:disabled) {
+    background-color: #d8b4fe; /* Slightly darker on hover */
+}
+
+.load-more-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .chat-box {
     height: 450px; /* Increased height slightly */
     overflow-y: auto;

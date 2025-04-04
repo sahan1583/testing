@@ -5,6 +5,7 @@
 # ./start_project.sh
 
 source myenv/bin/activate
+python manage.py migrate
 redis-server --daemonize yes
 celery -A animalwellness worker --loglevel=info &
 celery -A animalwellness beat --loglevel=info &
