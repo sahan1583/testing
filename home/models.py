@@ -7,7 +7,7 @@ class Case(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     location = models.URLField()
-    image = models.ImageField(upload_to='static/case_images/')
+    image = models.ImageField(upload_to='case_images/')
     status = models.CharField(max_length=100,default="Pending")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -32,7 +32,7 @@ class CaseUpdate(models.Model):
     title = models.CharField(max_length=100)
     location = models.URLField(blank=True, null=True)  # Optional URL
     description = models.TextField()
-    image = models.ImageField(upload_to='static/case_images/', blank=True, null=True)  # Optional image
+    image = models.ImageField(upload_to='case_images/', blank=True, null=True)  # Optional image
     updated_by = models.CharField(max_length=100, default="Admin")
 
     def __str__(self):

@@ -89,6 +89,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "location": message.location,
             "created_at": message.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             "image": image_url,
+            "id": message.id,
         }
 
     @staticmethod

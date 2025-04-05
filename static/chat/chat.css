@@ -55,6 +55,7 @@ body {
 .chat-box {
     height: 450px; /* Increased height slightly */
     overflow-y: auto;
+    scroll-behavior: smooth;
     padding: 15px;
     border: 1px solid #ddd;
     margin-bottom: 15px;
